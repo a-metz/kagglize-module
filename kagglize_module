@@ -35,8 +35,6 @@ import_template = "import {module_name}"
 @click.argument("module-root-path", type=click.Path(exists=True))
 def main(output_file, filename_regex, generate_import, module_root_path):
     module_root = Path(module_root_path).resolve()
-    module_name = module_root.name
-
     file_paths = find_file_paths(module_root, filename_regex)
 
     if len(file_paths) == 0:
@@ -62,7 +60,7 @@ def main(output_file, filename_regex, generate_import, module_root_path):
             )
 
         if generate_import:
-            output.write(import_template.format(module_name=module_name))
+            output.write(import_template.format(module_name=module_root.name))
 
 
 def find_file_paths(root_path, filename_regex):
