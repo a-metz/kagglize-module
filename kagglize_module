@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+import re
+from pathlib import Path
+
+import click
+
+header_template = "from pathlib import Path\n\n"
+directory_template = "Path.cwd().joinpath('{directory}').mkdir(parents=True, exist_ok=True)\n"
+file_template = "Path.cwd().joinpath('{relative_path}').open('w').write({content!r})\n"
+import_template = "import {module_name}"
+
+
+@click.command(help="Generate a single python script to recreate files of a python module.")
+@click.option(
+    "--output-file",
+    type=click.Path(),
+    default="output.py",
+    show_default=True,
+    help="Location of generated script.",
+)
+@click.option(
+    "--filename-regex",
+    type=str,
+    default=r"^.*\.py$",
+    show_default=True,
+    help="Filter filenames with regex.",
+)
+@click.option(
+    "--import/--no-import",
+    "generate_import",
+    default=True,
+    show_default=True,
+    help="Generate import statement.",
+)
+@click.argument("module-root-path", type=click.Path(exists=True))
+def main(output_file, filename_regex, generate_import, module_root_path):
+    module_root = Path(module_root_path).resolve()
+    module_name = module_root.name
+
+    file_paths = find_file_paths(module_root, filename_regex)
+
+    if len(file_paths) == 0:
+        print("No matching files found.")
+        return
+
+    print("writing to {}".format(str(output_file)))
+    with Path(output_file).open("w") as output:
+        output.write(header_template)
+
+        created_directories = set()
+        for file_path in file_paths:
+            relative_path = file_path.relative_to(module_root.parent)
+            directory = relative_path.parent
+            print(relative_path)
+
+            if directory not in created_directories:
+                output.write(directory_template.format(directory=directory))
+                created_directories.add(directory)
+
+            output.write(
+                file_template.format(relative_path=relative_path, content=file_path.read_text())
+            )
+
+        if generate_import:
+            output.write(import_template.format(module_name=module_name))
+
+
+def find_file_paths(root_path, filename_regex):
+    paths = Path.cwd().joinpath(root_path).glob("**/*")
+    filename_matcher = re.compile(filename_regex)
+
+    def is_matching(path):
+        return path.is_file() and filename_matcher.match(str(path.name))
+
+    return sorted(filter(is_matching, paths))
+
+
+if __name__ == "__main__":
+    main()
