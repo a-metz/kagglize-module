@@ -5,8 +5,8 @@ from pathlib import Path
 import click
 
 header_template = "from pathlib import Path\n\n"
-directory_template = "Path.cwd().joinpath('{directory}').mkdir(parents=True, exist_ok=True)\n"
-file_template = "Path.cwd().joinpath('{relative_path}').open('w').write({content!r})\n"
+directory_template = "Path('{directory}').mkdir(parents=True, exist_ok=True)\n"
+file_template = "Path('{relative_path}').open('w').write({content!r})\n"
 import_template = "import {module_name}"
 
 
@@ -64,7 +64,7 @@ def main(output_file, filename_regex, generate_import, module_root_path):
 
 
 def find_file_paths(root_path, filename_regex):
-    paths = Path.cwd().joinpath(root_path).glob("**/*")
+    paths = Path(root_path).glob("**/*")
     filename_matcher = re.compile(filename_regex)
 
     def is_matching(path):
