@@ -66,5 +66,5 @@ You can copy and paste this code into a Jupyter notebook on Kaggle and run it to
 
 This is intended only to upload your own code and not for uploading 3rd party modules.
 
-Use at your own risk (see [LICENSE](LICENSE)). I cannot guarantee that Kaggle allows using this and will not disqualify your submission. I have not yet submitted a final submission using this.
+Use at your own risk (see [LICENSE](LICENSE)). I cannot guarantee that Kaggle allows using this and will not disqualify your submission. When asking regarding its usage for the Abstraction and Reasoning Challenge I got [a positive answer](https://www.kaggle.com/c/abstraction-and-reasoning-challenge/discussion/141622#802477) from a Kaggle Team Member.
 
